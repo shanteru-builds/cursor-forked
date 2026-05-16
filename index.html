@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Forked helps you discover nearby places and dishes fast."
+    />
+    <title>Forked | Food Discovery</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="hero">
+      <nav class="nav" aria-label="Primary navigation">
+        <a class="brand" href="/" aria-label="Forked home">
+          <span class="brand__mark">F</span>
+          Forked
+        </a>
+        <a class="nav__link" href="#places">Browse places</a>
+      </nav>
+
+      <section class="hero__content">
+        <div>
+          <p class="eyebrow">Food nearby, decided faster</p>
+          <h1>Find what to eat without overthinking it.</h1>
+          <p class="hero__copy">
+            Browse nearby spots, scan craveable dishes, filter by mood, and let
+            Forked make a quick pick when you are hungry now.
+          </p>
+          <div class="hero__actions">
+            <a class="button button--primary" href="#places">Start browsing</a>
+            <button class="button button--ghost" type="button" data-surprise-button>
+              Surprise me
+            </button>
+          </div>
+        </div>
+
+        <aside class="quick-pick" data-surprise aria-live="polite">
+          <p class="eyebrow">Quick pick</p>
+          <h3>Loading your next bite...</h3>
+          <p>Forked is checking nearby dishes.</p>
+        </aside>
+      </section>
+    </header>
+
+    <main>
+      <section class="controls" aria-labelledby="controls-title">
+        <div>
+          <p class="eyebrow">Tune your cravings</p>
+          <h2 id="controls-title">What sounds good?</h2>
+        </div>
+
+        <label class="search">
+          <span>Search places, dishes, or neighborhoods</span>
+          <input
+            type="search"
+            placeholder="Try ramen, patio, vegetarian..."
+            data-search
+          />
+        </label>
+
+        <div class="filter-grid">
+          <label>
+            Cuisine
+            <select data-cuisine></select>
+          </label>
+          <label>
+            Sort by
+            <select data-sort>
+              <option value="distance">Closest first</option>
+              <option value="rating">Highest rated</option>
+              <option value="name">Name A-Z</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="mood-panel">
+          <p>Pick a mood</p>
+          <div class="chip-row" data-mood-filters></div>
+        </div>
+      </section>
+
+      <section class="results-section" id="places" aria-labelledby="places-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Nearby options</p>
+            <h2 id="places-title">Places and dishes</h2>
+          </div>
+          <p class="result-count" data-result-count>0 places nearby</p>
+        </div>
+
+        <div class="places-grid" data-results></div>
+      </section>
+    </main>
+
+    <footer>
+      <p>Forked is a simple demo app using curated sample data.</p>
+    </footer>
+
+    <script type="module" src="src/app.js"></script>
+  </body>
+</html>
