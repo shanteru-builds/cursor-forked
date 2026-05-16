@@ -89,7 +89,9 @@ test("allergy filtering only keeps places with at least one safer dish", () => {
   });
   const names = results.map((place) => place.name);
 
-  assert.ok(names.includes("Verde Street"));
+  assert.ok(names.includes("Miso Moon"));
+  assert.ok(names.includes("Grain & Good"));
+  assert.ok(!names.includes("Verde Street"));
   assert.ok(!names.includes("Butter Bird"));
   assert.ok(!names.includes("Slice Social"));
 });
