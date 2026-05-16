@@ -2,13 +2,16 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
+  addSavedDoodle,
   calculateDistanceMiles,
+  createDoodleEntry,
   filterPlaces,
   getAllDishes,
   getCuisineOptions,
   getDishAllergyStatus,
   getJournalStats,
   getPlaceMetrics,
+  parseSavedDoodles,
   pickSurprise
 } from "../src/app.js";
 import { foodStories, places } from "../src/data.js";
@@ -128,6 +131,32 @@ test("journal stats summarize scrollable food stories", () => {
   assert.equal(stats.storyCount, 4);
   assert.equal(stats.placeCount, 4);
   assert.ok(stats.tagCount >= 8);
+});
+
+test("saved doodle helpers create, parse, and cap local entries", () => {
+  const first = createDoodleEntry(
+    "data:image/png;base64,first",
+    "  ramen steam  ",
+    new Date("2026-05-16T12:00:00.000Z")
+  );
+  const second = createDoodleEntry(
+    "data:image/png;base64,second",
+    "",
+    new Date("2026-05-16T12:01:00.000Z")
+  );
+  const saved = addSavedDoodle([first], second, 2);
+
+  assert.equal(first.note, "ramen steam");
+  assert.deepEqual(saved.map((doodle) => doodle.image), [
+    "data:image/png;base64,second",
+    "data:image/png;base64,first"
+  ]);
+  assert.deepEqual(parseSavedDoodles(JSON.stringify(saved)), saved);
+  assert.deepEqual(parseSavedDoodles("not-json"), []);
+  assert.deepEqual(
+    parseSavedDoodles(JSON.stringify([{ image: "https://bad", savedAt: "now" }])),
+    []
+  );
 });
 
 test("all dishes include place metadata", () => {

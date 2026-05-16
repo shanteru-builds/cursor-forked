@@ -11,7 +11,7 @@ places, explore dishes, filter by craving, and decide without overthinking.
 - Cuisine and sorting controls
 - Playful mobile-first journal design with doodle-inspired blue accents
 - Scrollable food blog cards for "what I ate" memories
-- Browser doodle pad for sketching cravings and saving a local preview
+- Browser doodle pad for sketching cravings, saving local entries, and repopulating a memory gallery on reload
 - Leaflet/OpenStreetMap map with place markers, addresses, directions links, and browser location sorting
 - Owned allergy metadata with conservative allergen filters and dish safety badges
 - Community-style review counts and summaries without scraped Google review data
@@ -23,6 +23,11 @@ places, explore dishes, filter by craving, and decide without overthinking.
 The MVP uses sample restaurant data in `src/data.js`. It is structured so a
 future provider such as Foursquare or Yelp can hydrate place details, while
 Forked owns dish, allergen, and food-specific review metadata.
+
+Foursquare is a fit for place search/details such as restaurant names,
+categories, addresses, coordinates, photos, hours, and popularity signals.
+Forked still needs its own data layer for dish-level memories, doodles,
+allergens, and food-specific notes because those are not standard place fields.
 
 Allergy information is intentionally conservative: if a dish needs restaurant
 confirmation, it is not counted as a safer match for selected allergy filters.

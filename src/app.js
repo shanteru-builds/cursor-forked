@@ -15,6 +15,8 @@ const mapRuntime = {
   userMarker: null
 };
 
+const doodleStorageKey = "forked-doodles";
+
 export function getCuisineOptions(placeList = places) {
   return [...new Set(placeList.map((place) => place.cuisine))].sort();
 }
@@ -46,6 +48,40 @@ export function getJournalStats(storyList = foodStories) {
     placeCount: uniquePlaceIds.size,
     tagCount: uniqueTags.size
   };
+}
+
+export function createDoodleEntry(image, note = "", now = new Date()) {
+  return {
+    id: `doodle-${now.getTime()}`,
+    image,
+    note: note.trim(),
+    savedAt: now.toISOString()
+  };
+}
+
+export function parseSavedDoodles(rawValue) {
+  if (!rawValue) {
+    return [];
+  }
+
+  try {
+    const parsed = JSON.parse(rawValue);
+    const entries = Array.isArray(parsed) ? parsed : [parsed];
+
+    return entries.filter(
+      (entry) =>
+        entry &&
+        typeof entry.image === "string" &&
+        entry.image.startsWith("data:image/") &&
+        typeof entry.savedAt === "string"
+    );
+  } catch {
+    return [];
+  }
+}
+
+export function addSavedDoodle(doodles, doodle, limit = 12) {
+  return [doodle, ...doodles].slice(0, limit);
 }
 
 export function calculateDistanceMiles(origin, destination) {
@@ -553,6 +589,65 @@ function setLocationStatus(documentRef, message) {
   }
 }
 
+function formatSavedAt(value) {
+  return new Intl.DateTimeFormat("en", {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit"
+  }).format(new Date(value));
+}
+
+function loadSavedDoodles(storage = localStorage) {
+  return parseSavedDoodles(storage.getItem(doodleStorageKey));
+}
+
+function persistSavedDoodles(doodles, storage = localStorage) {
+  storage.setItem(doodleStorageKey, JSON.stringify(doodles));
+}
+
+function renderDoodleGallery(documentRef, doodles) {
+  const gallery = documentRef.querySelector("[data-doodle-gallery]");
+  const count = documentRef.querySelector("[data-doodle-count]");
+
+  if (count) {
+    count.textContent = `${doodles.length} saved doodle${
+      doodles.length === 1 ? "" : "s"
+    }`;
+  }
+
+  if (!gallery) {
+    return;
+  }
+
+  if (doodles.length === 0) {
+    gallery.innerHTML = `
+      <article class="doodle-memory doodle-memory--empty">
+        <p class="eyebrow">empty plate</p>
+        <h3>No saved doodles yet</h3>
+        <p>Draw a craving and save it to start your local food memory wall.</p>
+      </article>
+    `;
+    return;
+  }
+
+  gallery.innerHTML = doodles
+    .map(
+      (doodle) => `
+        <article class="doodle-memory">
+          <img src="${doodle.image}" alt="${escapeHtml(
+            doodle.note || "Saved food doodle"
+          )}" />
+          <div>
+            <p class="eyebrow">${escapeHtml(formatSavedAt(doodle.savedAt))}</p>
+            <h3>${escapeHtml(doodle.note || "untitled craving")}</h3>
+          </div>
+        </article>
+      `
+    )
+    .join("");
+}
+
 function resizeDoodleCanvas(canvas, context) {
   const ratio = window.devicePixelRatio || 1;
   const { width, height } = canvas.getBoundingClientRect();
@@ -580,6 +675,7 @@ function initDoodlePad(documentRef) {
 
   const context = canvas.getContext("2d");
   let isDrawing = false;
+  let savedDoodles = [];
 
   const setStatus = (message) => {
     if (status) {
@@ -621,6 +717,13 @@ function initDoodlePad(documentRef) {
   resizeDoodleCanvas(canvas, context);
   window.addEventListener("resize", () => resizeDoodleCanvas(canvas, context));
 
+  try {
+    savedDoodles = loadSavedDoodles();
+  } catch {
+    savedDoodles = [];
+  }
+  renderDoodleGallery(documentRef, savedDoodles);
+
   canvas.addEventListener("pointerdown", startDrawing);
   canvas.addEventListener("pointermove", draw);
   canvas.addEventListener("pointerup", stopDrawing);
@@ -637,25 +740,22 @@ function initDoodlePad(documentRef) {
 
   saveButton.addEventListener("click", () => {
     const image = canvas.toDataURL("image/png");
+    const doodle = createDoodleEntry(image, note?.value ?? "");
+
     if (preview) {
       preview.src = image;
       preview.hidden = false;
     }
 
     try {
-      localStorage.setItem(
-        "forked-doodle",
-        JSON.stringify({
-          image,
-          note: note?.value ?? "",
-          savedAt: new Date().toISOString()
-        })
-      );
+      savedDoodles = addSavedDoodle(savedDoodles, doodle);
+      persistSavedDoodles(savedDoodles);
+      renderDoodleGallery(documentRef, savedDoodles);
     } catch {
       // Saving is a convenience; the preview still works if storage is blocked.
     }
 
-    setStatus("saved this doodle to your browser");
+    setStatus("saved this doodle to your local memory wall");
   });
 }
 
