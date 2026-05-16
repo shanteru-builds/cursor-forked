@@ -1,4 +1,4 @@
-import { allergens, moods, places } from "./data.js";
+import { allergens, foodStories, moods, places } from "./data.js";
 
 const state = {
   query: "",
@@ -35,6 +35,17 @@ export function getAllDishes(placeList = places) {
       price: place.price
     }))
   );
+}
+
+export function getJournalStats(storyList = foodStories) {
+  const uniquePlaceIds = new Set(storyList.map((story) => story.placeId));
+  const uniqueTags = new Set(storyList.flatMap((story) => story.tags));
+
+  return {
+    storyCount: storyList.length,
+    placeCount: uniquePlaceIds.size,
+    tagCount: uniqueTags.size
+  };
 }
 
 export function calculateDistanceMiles(origin, destination) {
@@ -377,6 +388,48 @@ function renderSurprise(documentRef, recommendation) {
   `;
 }
 
+function renderFoodStories(documentRef) {
+  const rail = documentRef.querySelector("[data-story-rail]");
+  const stats = documentRef.querySelector("[data-journal-stats]");
+
+  if (!rail) {
+    return;
+  }
+
+  const storyMarkup = foodStories
+    .map((story, index) => {
+      const place = places.find((item) => item.id === story.placeId);
+
+      return `
+        <article class="story-card" style="--story-offset: ${index % 3}">
+          <div class="story-card__doodle" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <p class="eyebrow">${escapeHtml(story.date)} / ${escapeHtml(story.mood)}</p>
+          <h3>${escapeHtml(story.title)}</h3>
+          <p>${escapeHtml(story.excerpt)}</p>
+          <div class="story-card__meta">
+            <span>${escapeHtml(story.dish)}</span>
+            <span>${escapeHtml(place?.name ?? "saved place")}</span>
+            <span>by ${escapeHtml(story.author)}</span>
+          </div>
+          <div class="tag-row">${story.tags.map(createDishTag).join("")}</div>
+          <p class="story-card__caption">doodle: ${escapeHtml(story.doodle)}</p>
+        </article>
+      `;
+    })
+    .join("");
+
+  rail.innerHTML = storyMarkup;
+
+  if (stats) {
+    const journalStats = getJournalStats(foodStories);
+    stats.textContent = `${journalStats.storyCount} food notes across ${journalStats.placeCount} places`;
+  }
+}
+
 function getMapCenter(placeList) {
   const totals = placeList.reduce(
     (accumulator, place) => ({
@@ -500,6 +553,112 @@ function setLocationStatus(documentRef, message) {
   }
 }
 
+function resizeDoodleCanvas(canvas, context) {
+  const ratio = window.devicePixelRatio || 1;
+  const { width, height } = canvas.getBoundingClientRect();
+
+  canvas.width = Math.floor(width * ratio);
+  canvas.height = Math.floor(height * ratio);
+  context.setTransform(ratio, 0, 0, ratio, 0, 0);
+  context.lineCap = "round";
+  context.lineJoin = "round";
+  context.lineWidth = 3;
+  context.strokeStyle = "#2100e8";
+}
+
+function initDoodlePad(documentRef) {
+  const canvas = documentRef.querySelector("[data-doodle-canvas]");
+  const clearButton = documentRef.querySelector("[data-doodle-clear]");
+  const saveButton = documentRef.querySelector("[data-doodle-save]");
+  const preview = documentRef.querySelector("[data-doodle-preview]");
+  const status = documentRef.querySelector("[data-doodle-status]");
+  const note = documentRef.querySelector("[data-doodle-note]");
+
+  if (!canvas || typeof window === "undefined") {
+    return;
+  }
+
+  const context = canvas.getContext("2d");
+  let isDrawing = false;
+
+  const setStatus = (message) => {
+    if (status) {
+      status.textContent = message;
+    }
+  };
+
+  const getPoint = (event) => {
+    const rect = canvas.getBoundingClientRect();
+
+    return {
+      x: event.clientX - rect.left,
+      y: event.clientY - rect.top
+    };
+  };
+
+  const startDrawing = (event) => {
+    isDrawing = true;
+    const point = getPoint(event);
+    context.beginPath();
+    context.moveTo(point.x, point.y);
+    canvas.setPointerCapture(event.pointerId);
+  };
+
+  const draw = (event) => {
+    if (!isDrawing) {
+      return;
+    }
+
+    const point = getPoint(event);
+    context.lineTo(point.x, point.y);
+    context.stroke();
+  };
+
+  const stopDrawing = () => {
+    isDrawing = false;
+  };
+
+  resizeDoodleCanvas(canvas, context);
+  window.addEventListener("resize", () => resizeDoodleCanvas(canvas, context));
+
+  canvas.addEventListener("pointerdown", startDrawing);
+  canvas.addEventListener("pointermove", draw);
+  canvas.addEventListener("pointerup", stopDrawing);
+  canvas.addEventListener("pointercancel", stopDrawing);
+
+  clearButton.addEventListener("click", () => {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    if (preview) {
+      preview.removeAttribute("src");
+      preview.hidden = true;
+    }
+    setStatus("blank canvas, ready for your next craving");
+  });
+
+  saveButton.addEventListener("click", () => {
+    const image = canvas.toDataURL("image/png");
+    if (preview) {
+      preview.src = image;
+      preview.hidden = false;
+    }
+
+    try {
+      localStorage.setItem(
+        "forked-doodle",
+        JSON.stringify({
+          image,
+          note: note?.value ?? "",
+          savedAt: new Date().toISOString()
+        })
+      );
+    } catch {
+      // Saving is a convenience; the preview still works if storage is blocked.
+    }
+
+    setStatus("saved this doodle to your browser");
+  });
+}
+
 function init(documentRef = document) {
   const moodFilters = documentRef.querySelector("[data-mood-filters]");
   const allergyFilters = documentRef.querySelector("[data-allergy-filters]");
@@ -607,6 +766,8 @@ function init(documentRef = document) {
     );
   });
 
+  renderFoodStories(documentRef);
+  initDoodlePad(documentRef);
   update(documentRef);
 }
 

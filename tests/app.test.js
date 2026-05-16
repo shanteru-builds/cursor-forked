@@ -7,10 +7,11 @@ import {
   getAllDishes,
   getCuisineOptions,
   getDishAllergyStatus,
+  getJournalStats,
   getPlaceMetrics,
   pickSurprise
 } from "../src/app.js";
-import { places } from "../src/data.js";
+import { foodStories, places } from "../src/data.js";
 
 const baseFilters = {
   query: "",
@@ -119,6 +120,14 @@ test("distance metrics use user coordinates when available", () => {
   assert.equal(calculateDistanceMiles(userLocation, places[0].coordinates), 0);
   assert.equal(metrics.distanceLabel, "0.0 mi");
   assert.equal(metrics.minutes, 1);
+});
+
+test("journal stats summarize scrollable food stories", () => {
+  const stats = getJournalStats(foodStories);
+
+  assert.equal(stats.storyCount, 4);
+  assert.equal(stats.placeCount, 4);
+  assert.ok(stats.tagCount >= 8);
 });
 
 test("all dishes include place metadata", () => {

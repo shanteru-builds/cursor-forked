@@ -269,3 +269,58 @@ export const allergens = [
   "wheat",
   "sesame"
 ];
+
+export const foodStories = [
+  {
+    id: "ramen-rain-note",
+    placeId: "miso-moon",
+    title: "rainy day ramen",
+    date: "today",
+    dish: "Spicy Miso Ramen",
+    author: "maya",
+    mood: "comfort",
+    excerpt:
+      "sat at the counter, drew tiny steam clouds, and finally stopped scrolling for dinner.",
+    tags: ["comfort", "solo", "spicy"],
+    doodle: "steam swirls + egg"
+  },
+  {
+    id: "taco-sidewalk",
+    placeId: "verde-street",
+    title: "sidewalk taco break",
+    date: "yesterday",
+    dish: "Al Pastor Tacos",
+    author: "leo",
+    mood: "quick",
+    excerpt:
+      "two tacos, one fizzy drink, and a note to come back when the patio lights turn on.",
+    tags: ["quick", "budget", "group"],
+    doodle: "little lime wedge"
+  },
+  {
+    id: "market-bowl",
+    placeId: "grain-good",
+    title: "clean bowl, messy notes",
+    date: "fri",
+    dish: "Falafel Mezze Plate",
+    author: "sam",
+    mood: "healthy",
+    excerpt:
+      "marked sesame clearly, saved the tahini on the side, and made a tiny pita map.",
+    tags: ["vegetarian", "healthy", "allergy-aware"],
+    doodle: "pita triangle map"
+  },
+  {
+    id: "late-slice",
+    placeId: "slice-social",
+    title: "late slice with friends",
+    date: "thu",
+    dish: "Vodka Pepperoni Slice",
+    author: "nina",
+    mood: "group",
+    excerpt:
+      "big table, loud playlist, everyone picked one slice and rated the crust crunch.",
+    tags: ["group", "comfort", "shareable"],
+    doodle: "pizza moon"
+  }
+];

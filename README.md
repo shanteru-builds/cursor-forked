@@ -9,6 +9,9 @@ places, explore dishes, filter by craving, and decide without overthinking.
 - Search across places, cuisines, neighborhoods, dishes, and tags
 - Mood filters for quick, comfort, healthy, vegetarian, spicy, budget, group, and solo picks
 - Cuisine and sorting controls
+- Playful mobile-first journal design with doodle-inspired blue accents
+- Scrollable food blog cards for "what I ate" memories
+- Browser doodle pad for sketching cravings and saving a local preview
 - Leaflet/OpenStreetMap map with place markers, addresses, directions links, and browser location sorting
 - Owned allergy metadata with conservative allergen filters and dish safety badges
 - Community-style review counts and summaries without scraped Google review data

@@ -21,19 +21,23 @@
           <span class="brand__mark">F</span>
           Forked
         </a>
-        <a class="nav__link" href="#places">Browse places</a>
+        <div class="nav__links">
+          <a class="nav__link" href="#journal">Food journal</a>
+          <a class="nav__link" href="#doodle">Doodle</a>
+          <a class="nav__link" href="#places">Browse places</a>
+        </div>
       </nav>
 
       <section class="hero__content">
         <div>
-          <p class="eyebrow">Food nearby, decided faster</p>
-          <h1>Find what to eat without overthinking it.</h1>
+          <p class="eyebrow">food nearby / remembered softly</p>
+          <h1>Find dinner, doodle cravings, save the bites.</h1>
           <p class="hero__copy">
-            Browse nearby spots, scan craveable dishes, filter by mood or
-            allergens, and let Forked make a quick pick when you are hungry now.
+            A playful food discovery diary: browse nearby spots, scroll what you
+            ate, draw tiny notes, and keep allergy-aware details close.
           </p>
           <div class="hero__actions">
-            <a class="button button--primary" href="#places">Start browsing</a>
+            <a class="button button--primary" href="#journal">Open food diary</a>
             <button class="button button--ghost" type="button" data-surprise-button>
               Surprise me
             </button>
@@ -91,6 +95,62 @@
             Forked filters conservatively. Always confirm allergy safety with
             the restaurant before ordering.
           </small>
+        </div>
+      </section>
+
+      <section class="journal-section" id="journal" aria-labelledby="journal-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">scrollable food blog</p>
+            <h2 id="journal-title">What people ate lately</h2>
+          </div>
+          <p class="result-count" data-journal-stats>0 food notes</p>
+        </div>
+        <div class="story-rail" data-story-rail aria-label="Scrollable food notes"></div>
+      </section>
+
+      <section class="doodle-section" id="doodle" aria-labelledby="doodle-title">
+        <div class="doodle-copy">
+          <p class="eyebrow">draw your craving</p>
+          <h2 id="doodle-title">Make a tiny food memory</h2>
+          <p>
+            Sketch a noodle bowl, sauce idea, or reminder for later. This stays
+            in the browser for the prototype, so it is personal without needing
+            an account yet.
+          </p>
+          <label class="search">
+            <span>Optional note</span>
+            <input
+              type="text"
+              placeholder="e.g. ask if the tahini has sesame"
+              data-doodle-note
+            />
+          </label>
+          <div class="hero__actions">
+            <button class="button button--primary" type="button" data-doodle-save>
+              Save doodle
+            </button>
+            <button class="button button--dark" type="button" data-doodle-clear>
+              Clear
+            </button>
+          </div>
+          <p class="doodle-status" data-doodle-status>
+            blank canvas, ready for your next craving
+          </p>
+        </div>
+        <div class="doodle-pad">
+          <canvas
+            data-doodle-canvas
+            aria-label="Draw a food doodle"
+            width="640"
+            height="460"
+          ></canvas>
+          <img
+            class="doodle-preview"
+            data-doodle-preview
+            alt="Saved food doodle preview"
+            hidden
+          />
         </div>
       </section>
 
