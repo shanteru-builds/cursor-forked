@@ -8,6 +8,10 @@
       content="Forked helps you discover nearby places and dishes fast."
     />
     <title>Forked | Food Discovery</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -25,8 +29,8 @@
           <p class="eyebrow">Food nearby, decided faster</p>
           <h1>Find what to eat without overthinking it.</h1>
           <p class="hero__copy">
-            Browse nearby spots, scan craveable dishes, filter by mood, and let
-            Forked make a quick pick when you are hungry now.
+            Browse nearby spots, scan craveable dishes, filter by mood or
+            allergens, and let Forked make a quick pick when you are hungry now.
           </p>
           <div class="hero__actions">
             <a class="button button--primary" href="#places">Start browsing</a>
@@ -79,6 +83,31 @@
           <p>Pick a mood</p>
           <div class="chip-row" data-mood-filters></div>
         </div>
+
+        <div class="mood-panel">
+          <p>Avoid allergens</p>
+          <div class="chip-row" data-allergy-filters></div>
+          <small>
+            Forked filters conservatively. Always confirm allergy safety with
+            the restaurant before ordering.
+          </small>
+        </div>
+      </section>
+
+      <section class="map-section" aria-labelledby="map-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Map view</p>
+            <h2 id="map-title">Find food around you</h2>
+          </div>
+          <div class="location-actions">
+            <button class="button button--dark" type="button" data-location-button>
+              Use my location
+            </button>
+            <p data-location-status>Showing sample San Francisco locations.</p>
+          </div>
+        </div>
+        <div class="map" data-map aria-label="Map of nearby food places"></div>
       </section>
 
       <section class="results-section" id="places" aria-labelledby="places-title">
@@ -98,6 +127,7 @@
       <p>Forked is a simple demo app using curated sample data.</p>
     </footer>
 
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script type="module" src="src/app.js"></script>
   </body>
 </html>
